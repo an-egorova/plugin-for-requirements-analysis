@@ -1,0 +1,26 @@
+{
+	"name": "Проверка качества требований",
+	"version": "0.0.1",
+	"description": "В теории, должна анализироваться информация на странице и должны подсвечиваться рекомендации по исправлению всяких пакостей",
+	"manifest_version": 3,
+	"author": "https://github.com/an-egorova",
+	
+	"permissions": ["activeTab", "scripting"],
+	
+	"action":{
+		"default_popup": "index.html",
+		"default_title": "Проверить требования",
+		"default_icon":{
+		"16": "/images/icon16.png",
+		"32": "/images/icon32.png",
+		"64": "/images/icon64.png",
+		"128": "/images/icon128.png"
+		}
+	},
+	"icons":{
+		"16": "/images/icon16.png",
+		"32": "/images/icon32.png",
+		"64": "/images/icon64.png",
+		"128": "/images/icon128.png"
+	}
+}
