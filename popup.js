@@ -1,6 +1,5 @@
 // определяем функцию для создания всплывающего окна
-function createPopupWindow() 
-{
+function createPopupWindow() {
   const popupWindow = document.createElement('div');
   popupWindow.classList.add('popup');
 
@@ -53,7 +52,7 @@ function createPopupWindow()
 }
 
 // добавляем слушатель события на кнопку расширения браузерного плагина
-browserAction.onClicked.addListener(() => 
+start.addEventListener('click',() => 
 {
   const popup = createPopupWindow();
 

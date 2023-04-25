@@ -6,17 +6,19 @@
         <link rel="stylesheet" type="text/css" href="style.css">
     </head>
     <body>
-        <div id="content">
+        <div id="startInfo">
             <h2>Ревью требований</h2>
-            <p>Привет! Введи свой вопрос:</p>
-            <form>
-                <input type="text" id="queryInput" placeholder="Введи вопрос...">
-                <input type="submit" value="Ask">
-            </form>
-            <div id="resultContainer">
-                <p class="loading">Загрузка...</p>
-                <p class="info">Пожалуйста, отправьте запрос.</p>
-            </div>
+            <p>Перед началом ревью убедитесь что открыта нужная страница с требованиями в Confluence</p>
+        </div>
+        <div id="buttons">
+            <!--<input type="submit" value="Обработать">-->
+            <!--<button class="secondary" id="start">Выйти</button>-->
+        </div>
+        <div style="float:right; width:120px;">
+            <button class="primary" id="start">Начать ревью</button>
+        </div>
+        <div style="float:right; width:64px;">
+            <button class="secondary" id="start">Выйти</button>
         </div>
         <script src="popup.js"></script>
     </body>

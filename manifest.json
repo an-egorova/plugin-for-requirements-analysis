@@ -2,7 +2,7 @@
 	"name": "Проверка качества требований",
 	"version": "0.0.1",
 	"description": "В теории, должна анализироваться информация на странице и должны подсвечиваться рекомендации по исправлению всяких пакостей",
-	"permissions": ["declarativeContent", "storage"],
+	"permissions": ["declarativeContent", "storage",  "declarativeNetRequest", "declarativeNetRequestFeedback"],
 	"background.service_worker": 
 	{
 		"scripts": ["popup.js"],
