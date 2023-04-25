@@ -53,7 +53,7 @@ function createPopupWindow()
 }
 
 // добавляем слушатель события на кнопку расширения браузерного плагина
-chrome.browserAction.onClicked.addListener(() => 
+browserAction.onClicked.addListener(() => 
 {
   const popup = createPopupWindow();
 

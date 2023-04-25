@@ -1,28 +1,29 @@
 /* Стиль для главной страницы */
 body {
-    background-color: #f2f2f2;
+    background-color: #ffffff;
     font-family: Arial, sans-serif;
   }
   
-  h1 {
-    color: #007bff;
-    font-size: 2rem;
+  h2 {
+    color: #00a2e8;
+    font-size: 16px;
     text-align: center;
   }
   
   p {
-    font-size: 1.2rem;
+    font-size: 12px;
     line-height: 1.5;
     margin: 1rem 0;
   }
   
   .button {
-    background-color: #007bff;
-    color: #fff;
+    background-color: #00a2e8;
+    color: #ffffff;
     display: inline-block;
     padding: 0.8rem 1rem;
     text-align: center;
     text-decoration: none;
+    border-radius: 2px;
   }
   
   /* Стиль для модального окна */
@@ -62,7 +63,7 @@ body {
   }
   
   .modal-button {
-    background-color: #007bff;
+    background-color: #00a2e8;
     color: #fff;
     display: inline-block;
     padding: 0.8rem 1rem;
@@ -71,3 +72,33 @@ body {
     margin: 0 0.5rem;
   }
   
+  input[type="submit"] {
+    background-color: #00a2e8;
+    border: none;
+    color: #fff;
+    padding: 10px 20px;
+    font-size: 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.3s;
+    margin-bottom: 4px;
+  }
+  
+  input[type="submit"]:hover {
+    background-color: #0088c3;
+  }
+
+  input[type="text"] {
+    padding: 10px;
+    font-size: 12px;
+    border: 2px solid #ccc;
+    border-radius: 5px;
+    box-sizing: border-box;
+    transition: border-color 0.3s;
+    margin-bottom: 4px;
+  }
+  
+  input[type="text"]:focus {
+    outline: none;
+    border-color: #00a2e8;
+  }
