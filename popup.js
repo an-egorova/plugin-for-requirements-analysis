@@ -1,5 +1,36 @@
+// добавляем слушатель события на кнопку расширения браузерного плагина
+start.addEventListener('click',() => 
+{
+  createData();
+});
+
+
+function createData()
+{
+// Получаем текущую вкладку браузера
+chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+  // Получаем содержимое страницы из вкладки
+  chrome.tabs.executeScript(tabs[0].id, {
+    code: 'document.documentElement.outerHTML',
+  }, (result) => {
+    // Записываем содержимое страницы в файл JSON
+    const data = {
+      url: tabs[0].url,
+      content: result[0],
+    };
+    const json = JSON.stringify(data);
+    const blob = new Blob([json], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = 'data.json';
+    link.click();
+  });
+});
+}
+
 // определяем функцию для создания всплывающего окна
-function createPopupWindow() {
+/*function createPopupWindow() {
   const popupWindow = document.createElement('div');
   popupWindow.classList.add('popup');
 
@@ -58,4 +89,4 @@ start.addEventListener('click',() =>
 
   // добавляем всплывающее окно на страницу
   document.body.appendChild(popup);
-});
+});*/

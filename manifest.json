@@ -1,27 +1,30 @@
-{
-	"name": "Проверка качества требований",
-	"version": "0.0.1",
-	"description": "В теории, должна анализироваться информация на странице и должны подсвечиваться рекомендации по исправлению всяких пакостей",
-	"permissions": ["declarativeContent", "storage",  "declarativeNetRequest", "declarativeNetRequestFeedback"],
+{ 
+	"name": "Проверка качества требований", 
+	"version": "0.0.1", 
+	"description": "В теории, должна анализироваться информация на странице и должны подсвечиваться рекомендации по исправлению всяких пакостей", 
+	"permissions": ["declarativeContent", "storage", "declarativeNetRequest", "declarativeNetRequestFeedback"], 
 	"background.service_worker": 
-	{
-		"scripts": ["popup.js"],
-		"persistent": false
-	},
-	"action":{
-		"default_popup": "popup.html",
-		"default_icon":{
-			"16": "/images/icon16.png",
-			"32": "/images/icon32.png",
-			"64": "/images/icon64.png",
-			"128": "/images/icon128.png"
+	{ 
+		"scripts": ["popup.js"], 
+		"persistent": false 
+	}, 
+	"action":
+	{ 
+		"default_popup": "popup.html", 
+		"default_icon":
+		{ 
+			"16": "/images/icon16.png", 
+			"32": "/images/icon32.png", 
+			"64": "/images/icon64.png", 
+			"128": "/images/icon128.png" 
 		}
-	},
-	"icons":{
-		"16": "/images/icon16.png",
-		"32": "/images/icon32.png",
-		"64": "/images/icon64.png",
-		"128": "/images/icon128.png"
-	},
-	"manifest_version": 3
+	}, 
+	"icons":
+	{ 
+		"16": "/images/icon16.png", 
+		"32": "/images/icon32.png", 
+		"64": "/images/icon64.png", 
+		"128": "/images/icon128.png" 
+	}, 
+	"manifest_version": 3 
 }
