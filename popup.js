@@ -1,12 +1,41 @@
 // добавляем слушатель события на кнопку расширения браузерного плагина
 start.addEventListener('click',() => 
 {
+  logButtonTap();
   createData();
 });
 
+function logButtonTap(){
+  // Создаем новый элемент с указанным именем тега
+  const div = document.createElement("div");
+  div.id='newMessage';
+  // Добавляем в конец body тег div
+  document.body.append(div);
+  // Вставка текста в тег div
+  div.innerHTML = "<p>Кнопку нажали</p>";
+}
 
 function createData()
 {
+  ch
+  chrome.tabs.executeScript(tabs[0].id, {
+    code: 'document.documentElement.outerHTML',
+  }, (result) => {
+    // Записываем содержимое страницы в файл JSON
+    const data = {
+      url: tabs[0].url,
+      content: result[0],
+    };
+    const json = JSON.stringify(data);
+    const blob = new Blob([json], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = 'data.json';
+    link.click();
+  });
+  
+  /*
 // Получаем текущую вкладку браузера
 chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
   // Получаем содержимое страницы из вкладки
@@ -26,7 +55,7 @@ chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
     link.download = 'data.json';
     link.click();
   });
-});
+});*/
 }
 
 // определяем функцию для создания всплывающего окна
