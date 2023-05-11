@@ -1,0 +1,57 @@
+Код для скачивания файла при выборе кнопки "Начать анализ", сейчас не используется:
+
+//*************************************************************
+// слушатель события на кнопке расширения браузерного плагина
+start.addEventListener('click',() => 
+{
+  createData();
+});
+
+function createData()
+{  
+  var currentUrl = "";
+  var chromeTabsError = "";
+  chrome.tabs.query({ currentWindow: true, active: true }).then(saveInfoInActiveTabs, chromeTabsError);
+}
+async function saveInfoInActiveTabs(tabs) {
+  currentUrl=tabs[0].url;
+  let response = await fetch(currentUrl);
+  responseText = await response.text();
+  let fileContent = `${responseText}`;
+  // создаем объект Blob с данными файла
+  let file = new Blob([fileContent], {type: 'text/plain'});
+  // создаем ссылку для скачивания файла
+  let downloadLink = document.createElement('a');
+  downloadLink.href = URL.createObjectURL(file);
+  downloadLink.download = 'data.txt';
+  // добавляем ссылку на страницу и эмулируем клик для скачивания файла
+  document.body.appendChild(downloadLink);
+  downloadLink.click();
+  document.body.removeChild(downloadLink);
+}
+
+function chromeTabsError(error) {
+  //В переменной содержится информация об ошибке получения URL активного таба
+  chromeTabsError= `Error: ${error}`;
+}
+//*************************************************************
+
+
+Код для логирования (скачивается файл с данными):
+
+//****************ЛОГИРОВАНИЕ**********************************
+// определяем значения переменных
+let variable1 = currentUrl;
+// создаем строку с данными переменных
+let fileContent = `Переменная 1: ${variable1}`;
+// создаем объект Blob с данными файла
+let file = new Blob([fileContent], {type: 'text/plain'});
+// создаем ссылку для скачивания файла
+let downloadLink = document.createElement('a');
+downloadLink.href = URL.createObjectURL(file);
+downloadLink.download = 'consoleErrorDataLoading.txt';
+// добавляем ссылку на страницу и эмулируем клик для скачивания файла
+document.body.appendChild(downloadLink);
+downloadLink.click();
+document.body.removeChild(downloadLink);
+//****************ЛОГИРОВАНИЕ**********************************

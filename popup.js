@@ -1,109 +1,247 @@
-// добавляем слушатель события на кнопку расширения браузерного плагина
+let responseText = "";
+let requrimentText="";
+
+// слушатель события на кнопке расширения браузерного плагина, при выборе кнопки запускается основная логика плагина
 start.addEventListener('click',() => 
 {
-  logButtonTap();
-  //closeCurrentPage();
-  createData();
+  logButtonTap(); // функция добавляет информацию о том, что сработало нажатие на кнопку (нет ошибок) на форму попапа
+  analizeRequriment(); // функция забирает данные с текущей страницы для анализа
+  //closeCurrentPage(); // функция закрывает попап
 });
 
+// функция добавляет информацию о том, что сработало нажатие на кнопку (нет ошибок) на форму попапа
 function logButtonTap(){
   // Создаем новый элемент с указанным именем тега
-  //const url = window.location.href;
   const div = document.createElement("div");
   div.id='newMessage';
   // Добавляем в конец body тег div
   document.body.append(div);
   // Вставка текста в тег div
   div.innerHTML = "<p>Кнопку нажали</p>";
-  //div.innerHTML = url;
 }
+
+// функция закрывает попап
 function closeCurrentPage() {
   window.close();
 }
 
-function createData()
+// функция забирает данные с текущей страницы для анализа
+function analizeRequriment()
 {  
   var currentUrl = "";
   var chromeTabsError = "";
-  chrome.tabs.query({ currentWindow: true, active: true }).then(saveInfoInActiveTabs, chromeTabsError);
+  chrome.tabs.query({ currentWindow: true, active: true }).then(async function(tabs) {
+    await saveInfoInActiveTabs(tabs);
+    // здесь можно продолжить выполнение кода, который зависит от выполнения saveInfoInActiveTabs()
+    analizeRequrimentText(); //функция для анализа текста требований
+  }, chromeTabsError);
 }
 
-async function saveInfoInActiveTabs(tabs) {
-  //В переменной содержится информация об URL активного таба
-  currentUrl=tabs[0].url;
-  //В переменной содержится информация об URL активного таба
-  fetch(currentUrl)
-  .then(response => response.text())
-  .then(html => {
-    // Создаем объект для записи в файл
-    const data = { html };
-    // Конвертируем объект в JSON строку
-    const jsonString = JSON.stringify(data);
-    // Создаем ссылку для скачивания файла
-    const link = document.createElement('a');
-    link.href = `data:text/json;charset=utf-8,${encodeURIComponent(jsonString)}`;
-    link.download = 'data.json';
-    // Добавляем ссылку на страницу и нажимаем на нее
-    document.body.appendChild(link);
-    link.click();
-    // Удаляем ссылку
-    document.body.removeChild(link);
-  })
-  .catch(error => console.error(error));
-
-  /*
-  fetch(currentUrl)
-  .then(response => {return response.json()})
-  .then((data) => {
-    const link = document.createElement('a');
-    link.href = `data:text/json;charset=utf-8,${encodeURIComponent(data)}`;
-    link.download = 'data.json';
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-
-    //****************ЛОГИРОВАНИЕ**********************************
-    // определяем значения переменных
-    let variable2 = data;
-    // создаем строку с данными переменных
-    let fileContent2 = `Переменная 1: ${variable2}`;
-    // создаем объект Blob с данными файла
-    let file2 = new Blob([fileContent2], {type: 'text/plain'});
-    // создаем ссылку для скачивания файла
-    let downloadLink2 = document.createElement('a');
-    downloadLink2.href = URL.createObjectURL(file);
-    downloadLink2.download = 'saveInfoInActiveTabs.txt';
-    // добавляем ссылку на страницу и эмулируем клик для скачивания файла
-    document.body.appendChild(downloadLink2);
-    downloadLink2.click();
-    document.body.removeChild(downloadLink2);
-    //****************ЛОГИРОВАНИЕ**********************************
-
-  });*/
+// нужна для работы saveReqInfo(), выполняет асинхронный запрос к активному табу
+function saveInfoInActiveTabs(tabs) {
+  return new Promise(async function(resolve, reject) {
+    currentUrl=tabs[0].url;
+    let response = await fetch(currentUrl);
+    responseText = await response.text();
+    resolve();
+  });
 }
 
+// нужна для работы saveReqInfo(), содержит информацию об ошибке
 function chromeTabsError(error) {
   //В переменной содержится информация об ошибке получения URL активного таба
   chromeTabsError= `Error: ${error}`;
 }
 
+//функция для анализа текста требований
+function analizeRequrimentText(){
+  requrimentText = responseText.toLowerCase();
+  analizeProblem(); //проблема
+  analizeGoal(); //цель
+  analizeRestriction(); //ограничения
+  analizeRole(); //роли
+  analizeBPMN(); //схема процесса
+  analizeUC(); //сценарии
 
+/*  Проверяем:
 
-/*
-//****************ЛОГИРОВАНИЕ**********************************
-// определяем значения переменных
-let variable1 = currentUrl;
-// создаем строку с данными переменных
-let fileContent = `Переменная 1: ${variable1}`;
-// создаем объект Blob с данными файла
-let file = new Blob([fileContent], {type: 'text/plain'});
-// создаем ссылку для скачивания файла
-let downloadLink = document.createElement('a');
-downloadLink.href = URL.createObjectURL(file);
-downloadLink.download = 'consoleErrorDataLoading.txt';
-// добавляем ссылку на страницу и эмулируем клик для скачивания файла
-document.body.appendChild(downloadLink);
-downloadLink.click();
-document.body.removeChild(downloadLink);
-//****************ЛОГИРОВАНИЕ**********************************
+–	Какие требования указаны?
+    o	Указаны приложения которые дорабатываем
+    o	Прописано у кого есть доступ и у кого точно нет доступа к функционалу
+    o	В названиях не используются сокращения
+    o	Новое поле
+        §	Указана связь с БД
+        §	Комментарий в БД к полю
+        §	Указан формат поля
+        §	Указано местоположение поля
+        §	Если указано наличие подсказки, проверить что текст указан. Написано нужно ли где-то выгружать подсказку (на печатных формах, в архивах)
+        §	Указано значение по умолчанию
+        §	Поле редактируемое/нередактируемое
+        §	Указана обязательность поля
+        §	Указаны условия отображения
+    o	Новый пакет ЕИС
+        §	Есть ссылка на описание пакета или вставлена выборка на описание
+        §	Описано куда сохранять данные/откуда их брать
+        §	Указана потребность отправки уведомления
+        §	Указана потребность публиковать событие
+        §	Описана отправка пакетов в НР
+    o	Новый пакет в НР
+        §	Есть ссылка на описание пакета или вставлена выборка на описание
+        §	Описано /откуда их брать
+        §	Описано когда отправлять пакет
+        o	Новый справочник
+        §	Описано откуда брать 
+        §	Куда записывать инфрмацию?
+        §	Как обновлять справочник?
+        §	Описано где он будет использоваться
+    o	Добавление таблиц
+        §	Прописана сортировка по-умолчанию
+        §	Как еще можно сортировать?
+        §	Есть поиск по таблице?
+        §	Есть кнопки настройки столбцов?
+        §	Есть выгрузка таблицы?
+        §	Какая пагинация?
+    o	Добавляем фильтр
+        §	Указано значение фильтра
+        §	Указано противоречит ли фильтр существующим
+–	Указаны ли макеты?
+–	Есть ли нумерация таблиц/макетов/примеров?
+–	Учтены ошибочные сценарии? Ошибки валидации
 */
+}
+
+function analizeProblem(){
+  let selectWord = "проблема";
+
+  //определяем есть ли проблема, если нет, то выводим ошибку
+  if (requrimentText.includes(selectWord)==false){
+      console.log("В тексте нет упоминаний о проблеме, инициировавшей разработку");
+
+      //ЛОГИРОВАНИЕ НА ФОРМЕ ПОПАПА
+      const div = document.createElement("div");
+      div.id='newMessage';
+      document.body.append(div);
+      div.innerHTML = "<p>Нет проблемы</p>";
+      //ЛОГИРОВАНИЕ НА ФОРМЕ ПОПАПА
+  }
+  else{
+    
+    console.log("Все хорошо, я работаю!!");
+
+    //ЛОГИРОВАНИЕ НА ФОРМЕ ПОПАПА
+    const div = document.createElement("div");
+    div.id='newMessage';
+    document.body.append(div);
+    div.innerHTML = "<p>Все хорошо, я работаю!!</p>";
+    //ЛОГИРОВАНИЕ НА ФОРМЕ ПОПАПА
+  }
+  /*
+      o	Можем ли понять цель пользователя? Если хотят что-то, то для чего? Зачем?
+      o	В чем неудобство? Если делают что-то неудобно, то почему это неудобно?
+      o	Это фича есть у конкурентов, но ее нет у нас? Что нам даст разработка этой фичи? Будет ли удобно пользователю?
+   */
+}
+
+function analizeGoal(){
+  let selectWord = "цель";
+
+  //определяем есть ли цель, если нет, то выводим ошибку
+  if (requrimentText.includes(selectWord)==false){
+      console.log("В тексте нет упоминаний о цели разработки");
+      
+    //ЛОГИРОВАНИЕ НА ФОРМЕ ПОПАПА
+    const div = document.createElement("div");
+    div.id='newMessage';
+    document.body.append(div);
+    div.innerHTML = "<p>Нет цели</p>";
+    //ЛОГИРОВАНИЕ НА ФОРМЕ ПОПАПА
+  }
+  /*
+      o	Коротко указаны требуемые доработки, проверить все ли указали в цели? Проверить бы что то, что будет реализовано, решит проблему пользователя
+   */
+}
+
+//они есть не всегда, тут надо другое
+function analizeRestriction(){
+  let selectWord = "ограничения";
+
+  //определяем есть ли ограничения, если нет, то выводим ошибку
+  if (requrimentText.includes(selectWord)==false){
+      console.log("В тексте нет упоминаний об ограничениях");
+
+      //ЛОГИРОВАНИЕ НА ФОРМЕ ПОПАПА
+      const div = document.createElement("div");
+      div.id='newMessage';
+      document.body.append(div);
+      div.innerHTML = "<p>Нет ограничений</p>";
+      //ЛОГИРОВАНИЕ НА ФОРМЕ ПОПАПА
+  }
+  /*
+      o	В качестве рекомендации просьба проверить, что указаны нереализуемые доработки (цель пользователя не вся будет закрыта);
+      o	Есть сценарии, которые проверить нельзя;
+      o	Есть зависимости между задачами
+  */
+}
+
+function analizeRole(){
+  let selectWord = "роли";
+
+  //определяем есть ли ограничения, если нет, то выводим ошибку
+  if (requrimentText.includes(selectWord)==false){
+      console.log("В тексте нет упоминаний о ролях пользователей, которым доступен дорабатываемый функуционал");
+
+      //ЛОГИРОВАНИЕ НА ФОРМЕ ПОПАПА
+      const div = document.createElement("div");
+      div.id='newMessage';
+      document.body.append(div);
+      div.innerHTML = "<p>Нет ролей</p>";
+      //ЛОГИРОВАНИЕ НА ФОРМЕ ПОПАПА
+  }
+  /*
+      o	Дорабатываем функционал? Для кого?
+      o	Дорабатываем что-то с конкретной закупкой, то кто пользователь в закупке?
+      o	Задавать вопрос нужен ли Оператору функционал? Если нет, то нужно ли вынести это в ограничения (нельзя проверить)?
+  */
+}
+
+function analizeBPMN(){
+  let selectWord = ["добавить логик", "изменить логик", "доработать логик"];
+
+  //определяем есть ли упоминания доработки/изменения логики, если нет, то выводим ошибку
+  for (let i = 0; i < selectWord.length; i++) {
+      if (requrimentText.includes(selectWord[i])) {
+         console.log("В тексте указано что будет дорабатываться логика, но нет схемы процесса");
+
+        //ЛОГИРОВАНИЕ НА ФОРМЕ ПОПАПА
+        const div = document.createElement("div");
+        div.id='newMessage';
+        document.body.append(div);
+        div.innerHTML = "<p>Нет схем</p>";
+        //ЛОГИРОВАНИЕ НА ФОРМЕ ПОПАПА
+      }
+   }
+  /*
+      o	Должна быть когда есть доработка бизнес-процесса или новый функционал (новый процесс)
+  */
+}
+
+function analizeUC(){
+  let selectWord = ["добавить логик", "изменить логик", "доработать логик"];
+
+  //определяем есть ли упоминания доработки/изменения логики, если да, то выводим текст
+  for (let i = 0; i < selectWord.length; i++) {
+      if (requrimentText.includes(selectWord[i])) {
+         console.log("В тексте указано что будет дорабатываться логика, но нет описания новых сценариев работы");
+
+        //ЛОГИРОВАНИЕ НА ФОРМЕ ПОПАПА
+        const div = document.createElement("div");
+        div.id='newMessage';
+        document.body.append(div);
+        div.innerHTML = "<p>Нет сценариев</p>";
+        //ЛОГИРОВАНИЕ НА ФОРМЕ ПОПАПА
+      }
+   }
+  /*
+      o	А они не нужны только если мы просто делаем переименовку/добавление полей/блоков на форму без условий
+  */
+}
