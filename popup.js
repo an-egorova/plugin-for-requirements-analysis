@@ -54,86 +54,73 @@ function chromeTabsError(error) {
 }
 
 //функция для анализа текста требований
-function analizeRequrimentText(){
+async function analizeRequrimentText(){
+  let recommend = new Array();
   requrimentText = responseText.toLowerCase();
-  analizeProblem(); //проблема
-  analizeGoal(); //цель
-  analizeRestriction(); //ограничения
-  analizeRole(); //роли
+
+  recommend.push(analizeProblem()); //проблема
+  recommend.push(analizeGoal()); //цель
+  recommend.push(analizeRestriction()); //ограничения
+  recommend.push(analizeRole()); //роли
   analizeBPMN(); //схема процесса
   analizeUC(); //сценарии
 
-/*  Проверяем:
-
-–	Какие требования указаны?
-    o	Указаны приложения которые дорабатываем
-    o	Прописано у кого есть доступ и у кого точно нет доступа к функционалу
-    o	В названиях не используются сокращения
-    o	Новое поле
-        §	Указана связь с БД
-        §	Комментарий в БД к полю
-        §	Указан формат поля
-        §	Указано местоположение поля
-        §	Если указано наличие подсказки, проверить что текст указан. Написано нужно ли где-то выгружать подсказку (на печатных формах, в архивах)
-        §	Указано значение по умолчанию
-        §	Поле редактируемое/нередактируемое
-        §	Указана обязательность поля
-        §	Указаны условия отображения
-    o	Новый пакет ЕИС
-        §	Есть ссылка на описание пакета или вставлена выборка на описание
-        §	Описано куда сохранять данные/откуда их брать
-        §	Указана потребность отправки уведомления
-        §	Указана потребность публиковать событие
-        §	Описана отправка пакетов в НР
-    o	Новый пакет в НР
-        §	Есть ссылка на описание пакета или вставлена выборка на описание
-        §	Описано /откуда их брать
-        §	Описано когда отправлять пакет
-        o	Новый справочник
-        §	Описано откуда брать 
-        §	Куда записывать инфрмацию?
-        §	Как обновлять справочник?
-        §	Описано где он будет использоваться
-    o	Добавление таблиц
-        §	Прописана сортировка по-умолчанию
-        §	Как еще можно сортировать?
-        §	Есть поиск по таблице?
-        §	Есть кнопки настройки столбцов?
-        §	Есть выгрузка таблицы?
-        §	Какая пагинация?
-    o	Добавляем фильтр
-        §	Указано значение фильтра
-        §	Указано противоречит ли фильтр существующим
-–	Указаны ли макеты?
-–	Есть ли нумерация таблиц/макетов/примеров?
-–	Учтены ошибочные сценарии? Ошибки валидации
-*/
+  recommend = recommend.filter(element => element !== 0); // удаляем все нулевые элементы
+  
+  for (let i=0; i<recommend.length; i++){
+    const form = document.querySelector('body')
+    // Меняем содержимое новым html
+    form.innerHTML = ''
+    const h2Input = document.createElement("h2");
+    h2Input.className="error";
+    document.body.append(h2Input);
+    h2Input.innerHTML = "Ошибка";
+    const pInput = document.createElement("p");
+    document.body.append(pInput);
+    pInput.innerHTML = recommend[i];
+    const buttonInput = document.createElement("button");
+    buttonInput.id=`okButton${i}`;
+    buttonInput.className="error";
+    document.body.append(buttonInput);
+    buttonInput.innerHTML = "Исправлю";
+    const result = await clickOnButton(buttonInput);
+    //clickOnButton(buttonInput).then(result => alert(result));
+  } 
+  createEndPopup();
 }
 
+async function clickOnButton(buttonInput) {
+  return new Promise(resolve => {
+    buttonInput.addEventListener('click', () => {
+      resolve(1);
+    });
+  });
+}
+
+function createEndPopup(){
+  const formEnd = document.querySelector('body')
+  formEnd.innerHTML = ''
+  const h2InputEnd = document.createElement("h2");
+  document.body.append(h2InputEnd);
+  h2InputEnd.innerHTML = "Готово";
+  const pInputEnd = document.createElement("p");
+  document.body.append(pInputEnd);
+  pInputEnd.innerHTML = "Ошибок и рекомендаций по улучшению больше нет";
+  const buttonInputEnd = document.createElement("button");
+  document.body.append(buttonInputEnd);
+  buttonInputEnd.className="primary";
+  buttonInputEnd.innerHTML = "Закрыть";
+  buttonInputEnd.addEventListener('click', () => {
+    closeCurrentPage();
+  });
+}
 function analizeProblem(){
-  let selectWord = "проблема";
-
   //определяем есть ли проблема, если нет, то выводим ошибку
-  if (requrimentText.includes(selectWord)==false){
-      console.log("В тексте нет упоминаний о проблеме, инициировавшей разработку");
-
-      //ЛОГИРОВАНИЕ НА ФОРМЕ ПОПАПА
-      const div = document.createElement("div");
-      div.id='newMessage';
-      document.body.append(div);
-      div.innerHTML = "<p>Нет проблемы</p>";
-      //ЛОГИРОВАНИЕ НА ФОРМЕ ПОПАПА
+  if (requrimentText.includes("проблема")==false){
+      return "В тексте нет упоминаний о проблеме, инициировавшей разработку";
   }
   else{
-    
-    console.log("Все хорошо, я работаю!!");
-
-    //ЛОГИРОВАНИЕ НА ФОРМЕ ПОПАПА
-    const div = document.createElement("div");
-    div.id='newMessage';
-    document.body.append(div);
-    div.innerHTML = "<p>Все хорошо, я работаю!!</p>";
-    //ЛОГИРОВАНИЕ НА ФОРМЕ ПОПАПА
+    return 0;
   }
   /*
       o	Можем ли понять цель пользователя? Если хотят что-то, то для чего? Зачем?
@@ -143,18 +130,12 @@ function analizeProblem(){
 }
 
 function analizeGoal(){
-  let selectWord = "цель";
-
   //определяем есть ли цель, если нет, то выводим ошибку
-  if (requrimentText.includes(selectWord)==false){
-      console.log("В тексте нет упоминаний о цели разработки");
-      
-    //ЛОГИРОВАНИЕ НА ФОРМЕ ПОПАПА
-    const div = document.createElement("div");
-    div.id='newMessage';
-    document.body.append(div);
-    div.innerHTML = "<p>Нет цели</p>";
-    //ЛОГИРОВАНИЕ НА ФОРМЕ ПОПАПА
+  if (requrimentText.includes("цель")==false){
+    return "В тексте нет упоминаний о цели разработки";
+  }
+  else{
+    return 0;
   }
   /*
       o	Коротко указаны требуемые доработки, проверить все ли указали в цели? Проверить бы что то, что будет реализовано, решит проблему пользователя
@@ -163,18 +144,12 @@ function analizeGoal(){
 
 //они есть не всегда, тут надо другое
 function analizeRestriction(){
-  let selectWord = "ограничения";
-
   //определяем есть ли ограничения, если нет, то выводим ошибку
-  if (requrimentText.includes(selectWord)==false){
-      console.log("В тексте нет упоминаний об ограничениях");
-
-      //ЛОГИРОВАНИЕ НА ФОРМЕ ПОПАПА
-      const div = document.createElement("div");
-      div.id='newMessage';
-      document.body.append(div);
-      div.innerHTML = "<p>Нет ограничений</p>";
-      //ЛОГИРОВАНИЕ НА ФОРМЕ ПОПАПА
+  if (requrimentText.includes("ограничения")==false){
+    return"В тексте нет упоминаний об ограничениях";
+  }
+  else{
+    return 0;
   }
   /*
       o	В качестве рекомендации просьба проверить, что указаны нереализуемые доработки (цель пользователя не вся будет закрыта);
@@ -184,18 +159,12 @@ function analizeRestriction(){
 }
 
 function analizeRole(){
-  let selectWord = "роли";
-
   //определяем есть ли ограничения, если нет, то выводим ошибку
-  if (requrimentText.includes(selectWord)==false){
-      console.log("В тексте нет упоминаний о ролях пользователей, которым доступен дорабатываемый функуционал");
-
-      //ЛОГИРОВАНИЕ НА ФОРМЕ ПОПАПА
-      const div = document.createElement("div");
-      div.id='newMessage';
-      document.body.append(div);
-      div.innerHTML = "<p>Нет ролей</p>";
-      //ЛОГИРОВАНИЕ НА ФОРМЕ ПОПАПА
+  if (requrimentText.includes("роли")==false){
+    return "В тексте нет упоминаний о ролях пользователей, которым доступен дорабатываемый функуционал";
+  }
+  else{
+    return 0;
   }
   /*
       o	Дорабатываем функционал? Для кого?
