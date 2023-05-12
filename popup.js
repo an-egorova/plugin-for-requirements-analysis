@@ -4,30 +4,6 @@ let requrimentText="";
 // слушатель события на кнопке расширения браузерного плагина, при выборе кнопки запускается основная логика плагина
 start.addEventListener('click',() => 
 {
-  logButtonTap(); // функция добавляет информацию о том, что сработало нажатие на кнопку (нет ошибок) на форму попапа
-  analizeRequriment(); // функция забирает данные с текущей страницы для анализа
-  //closeCurrentPage(); // функция закрывает попап
-});
-
-// функция добавляет информацию о том, что сработало нажатие на кнопку (нет ошибок) на форму попапа
-function logButtonTap(){
-  // Создаем новый элемент с указанным именем тега
-  const div = document.createElement("div");
-  div.id='newMessage';
-  // Добавляем в конец body тег div
-  document.body.append(div);
-  // Вставка текста в тег div
-  div.innerHTML = "<p>Кнопку нажали</p>";
-}
-
-// функция закрывает попап
-function closeCurrentPage() {
-  window.close();
-}
-
-// функция забирает данные с текущей страницы для анализа
-function analizeRequriment()
-{  
   var currentUrl = "";
   var chromeTabsError = "";
   chrome.tabs.query({ currentWindow: true, active: true }).then(async function(tabs) {
@@ -35,6 +11,11 @@ function analizeRequriment()
     // здесь можно продолжить выполнение кода, который зависит от выполнения saveInfoInActiveTabs()
     analizeRequrimentText(); //функция для анализа текста требований
   }, chromeTabsError);
+});
+
+// функция закрывает попап
+function closeCurrentPage() {
+  window.close();
 }
 
 // нужна для работы saveReqInfo(), выполняет асинхронный запрос к активному табу
@@ -81,6 +62,7 @@ async function analizeRequrimentText(){
     const buttonInput = document.createElement("button");
     buttonInput.id=`okButton${i}`;
     buttonInput.className="error";
+    buttonInput.style="float:right; width:125px;"
     document.body.append(buttonInput);
     buttonInput.innerHTML = "Исправлю";
     const result = await clickOnButton(buttonInput);
@@ -109,6 +91,7 @@ function createEndPopup(){
   const buttonInputEnd = document.createElement("button");
   document.body.append(buttonInputEnd);
   buttonInputEnd.className="primary";
+  buttonInputEnd.style="float:right; width:125px;"
   buttonInputEnd.innerHTML = "Закрыть";
   buttonInputEnd.addEventListener('click', () => {
     closeCurrentPage();
