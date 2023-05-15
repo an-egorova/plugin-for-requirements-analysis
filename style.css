@@ -90,36 +90,3 @@ p {
   line-height: 1.5;
   margin: 1rem 0;
 }
-
-/* Стиль для текстового поля */
-input[type="text"] {
-  padding: 10px;
-  font-size: 14px;
-  border: 2px solid #ccc;
-  border-radius: 5px;
-  box-sizing: border-box;
-  transition: border-color 0.3s;
-  margin-bottom: 4px;
-}
-
-input[type="text"]:focus {
-  outline: none;
-  border-color: #00a2e8;
-}
-
-/* Стиль для кнопки отправки */
-input[type="submit"] {
-  background-color: #00a2e8;
-  color: #fff;
-  border: none;
-  font-size: 14px;
-  padding: 10px 20px;
-  border-radius: 4px;
-  cursor: pointer;
-  transition: all 0.3s;
-  margin-bottom: 4px;
-}
-
-input[type="submit"]:hover {
-  background-color: #0088c3;
-}
