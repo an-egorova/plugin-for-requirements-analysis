@@ -55,6 +55,21 @@ button.error:active {
   background-color: #f80000;
 }
 
+/* Стиль для рекомендации */
+button.warning {
+  background-color: #FFB700;
+  color: #fff;
+  border: none;
+}
+
+button.warning:hover {
+  background-color: #ffba00;
+}
+
+button.warning:active {
+  background-color: #ffb300;
+}
+
 /* Стиль для заголовков */
 h2 {
   color: #00a2e8;
@@ -63,6 +78,10 @@ h2 {
 
 h2.error {
   color: #FF3100;
+}
+
+h2.warning {
+  color: #FFB700;
 }
 
 /* Стиль для обычного текста */

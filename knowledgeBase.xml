@@ -1,0 +1,38 @@
+<rules>
+  <rule>
+    <wordKeys>
+        <wordKey>проблема</wordKey>
+    </wordKeys>
+    <type>error</type>
+    <problem>Отсутствует проблема</problem>
+    <solution>В тексте нет упоминаний о проблеме, инициировавшей разработку. Необходимо добавить раздел с описанием проблемы в начало документа.</solution>
+  </rule>
+  
+  <rule>
+    <wordKeys>
+        <wordKey>цель</wordKey>
+    </wordKeys>
+    <type>error</type>
+    <problem>Отсутствует цель</problem>
+    <solution>В тексте нет упоминаний о цели разработки. Необходимо добавить раздел с описанием цели после описания проблемы в начале документа.</solution>
+  </rule>
+  
+  <rule>
+    <wordKeys>
+        <wordKey>ограничения</wordKey>
+    </wordKeys>
+    <type>warning</type>
+    <problem>Отсутствуют ограничения</problem>
+    <solution>ДОПИСАТЬ</solution>
+  </rule>
+
+  <rule>
+    <wordKeys>
+        <wordKey>роли</wordKey>
+    </wordKeys>
+    <type>warning</type>
+    <problem>Отсутствуют роли</problem>
+    <solution>ДОПИСАТЬ</solution>
+  </rule>
+
+</rules>

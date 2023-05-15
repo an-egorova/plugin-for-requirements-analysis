@@ -1,5 +1,41 @@
 let responseText = "";
 let requrimentText="";
+let wordKeys = [];
+let problem = [];
+let solution = [];
+let type = [];
+let recommend = new Array();
+
+function fileRead() {
+  return new Promise((resolve, reject) => {
+    let xhr = new XMLHttpRequest();
+    xhr.open("GET", "knowledgeBase.xml");
+    xhr.onreadystatechange = function() {
+      if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
+        let xmlDoc = xhr.responseXML;
+        let rules = xmlDoc.getElementsByTagName("rule");
+        for (let i = 0; i < rules.length; i++) {
+          let wordKeysElem = rules[i].getElementsByTagName("wordKey");
+          let keys = [];
+          for (let j = 0; j < wordKeysElem.length; j++) {
+            keys.push(wordKeysElem[j].textContent);
+          }
+          wordKeys.push(keys);
+          problem.push(rules[i].getElementsByTagName("problem")[0].textContent);
+          solution.push(rules[i].getElementsByTagName("solution")[0].textContent);
+          type.push(rules[i].getElementsByTagName("type")[0].textContent);
+        }
+        resolve();
+      } else if (xhr.readyState === XMLHttpRequest.DONE && xhr.status !== 200) {
+        reject("Error loading file");
+      }
+    };
+    xhr.send();
+  });
+}
+
+//сохранили информацию из базы знаний
+fileRead();
 
 // Функция для закрытия попапа
 const closeCurrentPage = () => {
@@ -21,135 +57,45 @@ const chromeTabsError = (error) => {
   console.error(`Error: ${error}`);
 }
 
-function analizeProblem() {
-  //определяем есть ли проблема, если нет, то выводим ошибку
-  if (!requrimentText.includes("проблема")) {
-    return "В тексте нет упоминаний о проблеме, инициировавшей разработку";
-  } else {
-    return 0;
-  }
-  /*
-      o  Можем ли понять цель пользователя? Если хотят что-то, то для чего? Зачем?
-      o  В чем неудобство? Если делают что-то неудобно, то почему это неудобно?
-      o  Это фича есть у конкурентов, но ее нет у нас? Что нам даст разработка этой фичи? Будет ли удобно пользователю?
-   */
-}
-
-function analizeGoal() {
-  //определяем есть ли цель, если нет, то выводим ошибку
-  if (!requrimentText.includes("цель")) {
-    return "В тексте нет упоминаний о цели разработки";
-  } else {
-    return 0;
-  }
-  /*
-      o  Коротко указаны требуемые доработки, проверить все ли указали в цели? Проверить бы что-то, что будет реализовано, решит проблему пользователя
-   */
-}
-
-//они есть не всегда, тут надо другое
-function analizeRestriction() {
-  //определяем есть ли ограничения, если нет, то выводим ошибку
-  if (!requrimentText.includes("ограничения")) {
-    return "В тексте нет упоминаний об ограничениях";
-  } else {
-    return 0;
-  }
-  /*
-      o  В качестве рекомендации просьба проверить, что указаны нереализуемые доработки (цель пользователя не вся будет закрыта);
-      o  Есть сценарии, которые проверить нельзя;
-      o  Есть зависимости между задачами
-  */
-}
-
-function analizeRole() {
-  //определяем есть ли ограничения, если нет, то выводим ошибку
-  if (!requrimentText.includes("роли")) {
-    return "В тексте нет упоминаний о ролях пользователей, которым доступен дорабатываемый функуционал";
-  } else {
-    return 0;
-  }
-  /*
-      o  Дорабатываем функционал? Для кого?
-      o  Дорабатываем что-то с конкретной закупкой, то кто пользователь в закупке?
-      o  Задавать вопрос нужен ли Оператору функционал? Если нет, то нужно ли вынести это в ограничения (нельзя проверить)?
-  */
-}
-
-function analizeBPMN() {
-  const selectWord = ["добавить логик", "изменить логик", "доработать логик"];
-
-  //определяем есть ли упоминания доработки/изменения логики, если нет, то выводим ошибку
-  const hasLogic = selectWord.some(word => requrimentText.includes(word));
-  if (hasLogic) {
-    console.log("В тексте указано что будет дорабатываться логика, но нет схемы процесса");
-
-    //ЛОГИРОВАНИЕ НА ФОРМЕ ПОПАПА
-    const div = document.createElement("div");
-    div.id = 'newMessage';
-    document.body.append(div);
-    div.innerHTML = "<p>Нет схем</p>";
-    //ЛОГИРОВАНИЕ НА ФОРМЕ ПОПАПА
-  }
-  /*
-      o  Должна быть когда есть доработка бизнес-процесса или новый функционал (новый процесс)
-  */
-}
-
-function analizeUC() {
-  const selectWord = ["добавить логик", "изменить логик", "доработать логик"];
-
-  //определяем есть ли упоминания доработки/изменения логики, если да, то выводим текст
-  const hasLogic = selectWord.some(word => requrimentText.includes(word));
-  if (hasLogic) {
-    console.log("В тексте указано что будет дорабатываться логика, но нет описания новых сценариев работы");
-
-    //ЛОГИРОВАНИЕ НА ФОРМЕ ПОПАПА
-    const div = document.createElement("div");
-    div.id = 'newMessage';
-    document.body.append(div);
-    div.innerHTML = "<p>Нет сценариев</p>";
-    //ЛОГИРОВАНИЕ НА ФОРМЕ ПОПАПА
-  }
-  /*
-      o  А они не нужны только если мы просто делаем переименовку/добавление полей/блоков на форму без условий
-  */
-}
-
 // Функция для анализа текста требований
 const analizeRequrimentText = async () => {
-  let recommend = new Array();
+  //делаем текст читаемым
   requrimentText = responseText.toLowerCase();
 
-  recommend.push(analizeProblem()); // Проблема
-  recommend.push(analizeGoal()); // Цель
-  recommend.push(analizeRestriction()); // Ограничения
-  recommend.push(analizeRole()); // Роли
-  analizeBPMN(); // Схема процесса
-  analizeUC(); // Сценарии
-
-  recommend = recommend.filter(element => element !== 0); // Удаляем все нулевые элементы
-  
-  for (let i=0; i<recommend.length; i++){
-    const form = document.querySelector('body');
-    // Меняем содержимое новым HTML
-    form.innerHTML = '';
-    const h2Input = document.createElement("h2");
-    h2Input.className="error";
-    document.body.append(h2Input);
-    h2Input.innerHTML = "Ошибка";
-    const pInput = document.createElement("p");
-    document.body.append(pInput);
-    pInput.innerHTML = recommend[i];
-    const buttonInput = document.createElement("button");
-    buttonInput.id=`okButton${i}`;
-    buttonInput.className="error";
-    buttonInput.style="float:right; width:125px;"
-    document.body.append(buttonInput);
-    buttonInput.innerHTML = "Исправлю";
-    const result = await clickOnButton(buttonInput);
-    //clickOnButton(buttonInput).then(result => alert(result));
-  } 
+  //проверяем текст страницы, чтобы вернуть рекомендации
+  for (let i=0; i<wordKeys.length; i++){
+    if (!requrimentText.includes(wordKeys[i])) {
+      //recommend.push(solution[i]);
+      const form = document.querySelector('body');
+      // Меняем содержимое новым HTML
+      form.innerHTML = '';
+      const h2Input = document.createElement("h2");
+      if (type[i]=="error"){
+        h2Input.className="error";
+        h2Input.innerHTML = "Ошибка";
+      }
+      else{
+        h2Input.className="warning";
+        h2Input.innerHTML = "Рекомендация";
+      }
+      document.body.append(h2Input);
+      const pInput = document.createElement("p");
+      document.body.append(pInput);
+      pInput.innerHTML = solution[i];
+      const buttonInput = document.createElement("button");
+      buttonInput.id=`okButton${i}`;
+      if (type[i]=="error"){
+        buttonInput.className="error";
+      }
+      else{
+        buttonInput.className="warning";
+      }
+      buttonInput.style="float:right; width:125px;"
+      document.body.append(buttonInput);
+      buttonInput.innerHTML = "Исправлю";
+      const result = await clickOnButton(buttonInput);
+    }
+  }
   createEndPopup();
 }
 
