@@ -1,38 +1,525 @@
 <rules>
+
   <rule>
-    <wordKeys>
-        <wordKey>проблема</wordKey>
-    </wordKeys>
-    <type>error</type>
-    <problem>Отсутствует проблема</problem>
-    <solution>В тексте нет упоминаний о проблеме, инициировавшей разработку. Необходимо добавить раздел с описанием проблемы в начало документа.</solution>
-  </rule>
-  
-  <rule>
-    <wordKeys>
-        <wordKey>цель</wordKey>
-    </wordKeys>
-    <type>error</type>
-    <problem>Отсутствует цель</problem>
-    <solution>В тексте нет упоминаний о цели разработки. Необходимо добавить раздел с описанием цели после описания проблемы в начале документа.</solution>
-  </rule>
-  
-  <rule>
-    <wordKeys>
-        <wordKey>ограничения</wordKey>
-    </wordKeys>
-    <type>warning</type>
-    <problem>Отсутствуют ограничения</problem>
-    <solution>ДОПИСАТЬ</solution>
+    <id>1</id>
+    <before>true</before>
+    <hasFirst>false</hasFirst>
+    <keeWordsFirst>
+        <keeWordFirst>содержание</keeWordFirst>
+    </keeWordsFirst>
+    <styleType>error</styleType>
+    <solution>Основные разделы CRQ должны быть представлены подпунктами данной страницы. Обычно содержание располагается после раздела "Версии документа". Содержание добавляется на страницу при помощи макроса "Оглавление".</solution>
+    <description>информация которая видна только в xml</description>
   </rule>
 
   <rule>
-    <wordKeys>
-        <wordKey>роли</wordKey>
-    </wordKeys>
-    <type>warning</type>
-    <problem>Отсутствуют роли</problem>
-    <solution>ДОПИСАТЬ</solution>
+    <id>2</id>
+    <before>true</before>
+    <hasFirst>false</hasFirst>
+    <keeWordsFirst>
+        <keeWordFirst>версии документа</keeWordFirst>
+    </keeWordsFirst>
+    <styleType>error</styleType>
+    <solution>Версии документа – раздел, в котором содержится таблица с информацией о версионности документа. Таблица содержит столбцы: “Версия”, “Дата”, “Задача”, “Кто внес изменения”, “Раздел документа”, “Изменения”. По умолчанию в таблицу добавлены комментарии о том, как заполнять столбцы таблицы.</solution>
+    <description>информация которая видна только в xml</description>
+  </rule>
+
+  <rule>
+    <id>3</id>
+    <before>true</before>
+    <hasFirst>false</hasFirst>
+    <keeWordsFirst>
+        <keeWordFirst>проблема</keeWordFirst>
+    </keeWordsFirst>
+    <styleType>error</styleType>
+    <solution>"В проблеме должна отвечать на один или несколько вопросов из списка:(вопрос) Какая конечная цель пользователя при использовании функционала (целей может быть несколько)?(вопрос) Как решают потребность сейчас (т.е. что делают пользователи, чтобы достичь своей цели, в текущих условиях)?(вопрос) Есть ли у соседних площадок подобный функционал (всегда можно подсмотреть и сделать также или лучше, узнав, какие улучшения хотели бы заказчики в нём)?(вопрос) Кто будет с этим работать?Иногда доработки выполняются не для пользователя, а для соответствия требованиям законодательства или системам, с которым у ЭТП есть интеграция. В этом случае необходимо описать какое есть несоответствие. Под раскрывашкой можно прикладывать файлы новых постановлений, законов или прямые выдержки из них."</solution>
+    <description>информация которая видна только в xml</description>
+  </rule>
+
+  <rule>
+    <id>4</id>
+    <before>true</before>
+    <hasFirst>false</hasFirst>
+    <keeWordsFirst>
+        <keeWordFirst>цель</keeWordFirst>
+    </keeWordsFirst>
+    <styleType>error</styleType>
+    <solution>"В цели необходимо указать вариант технического решения задачи. Допускается несколько альтернативных вариантов - тогда нужно согласование 1 технической реализуемости с разработкой; 2 визуализации для пользователя с ПМ."</solution>
+    <description>информация которая видна только в xml</description>
+  </rule>
+
+   <rule>
+    <id>5</id>
+    <before>true</before>
+    <hasFirst>true</hasFirst>
+    <keeWordsFirst>
+        <keeWordFirst>цель</keeWordFirst>
+    </keeWordsFirst>
+    <hasSecond>true</hasSecond>
+    <keeWordsSecond>
+        <keeWordSecond>доработать</keeWordSecond>
+        <keeWordSecond>доработка</keeWordSecond>
+    </keeWordsSecond>
+    <styleType>warning</styleType>
+    <solution>я не придумала, тут про некорректную цель</solution>
+    <description>информация которая видна только в xml</description>
+  </rule>
+
+  <rule>
+    <id>6</id>
+    <before>true</before>
+    <hasFirst>false</hasFirst>
+    <keeWordsFirst>
+        <keeWordFirst>ограничения</keeWordFirst>
+    </keeWordsFirst>
+    <hasSecond>true</hasSecond>
+    <keeWordsSecond>
+        <keeWordSecond>ограничения</keeWordSecond>
+        <keeWordSecond>ограничение</keeWordSecond>
+    </keeWordsSecond>
+    <styleType>error</styleType>
+    <solution>добавить в начало документа в раздел ограничения, а то че как не родные</solution>
+    <description>информация которая видна только в xml</description>
+  </rule>
+
+  <rule>
+    <id>7</id>
+    <before>true</before>
+    <hasFirst>false</hasFirst>
+    <keeWordsFirst>
+        <keeWordFirst>ограничения</keeWordFirst>
+    </keeWordsFirst>
+    <hasSecond>true</hasSecond>
+    <keeWordsSecond>
+        <keeWordSecond>от задачи</keeWordSecond>
+        <keeWordSecond>после задачи</keeWordSecond>
+    </keeWordsSecond>
+    <styleType>error</styleType>
+    <solution>2 добавить в начало документа в раздел ограничения, а то че как не родные</solution>
+    <description>информация которая видна только в xml</description>
+  </rule>
+
+  <rule>
+    <id>8</id>
+    <before>true</before>
+    <hasFirst>false</hasFirst>
+    <keeWordsFirst>
+        <keeWordFirst>роли</keeWordFirst>
+    </keeWordsFirst>
+    <hasSecond>true</hasSecond>
+    <keeWordsSecond>
+        <keeWordSecond>реестр</keeWordSecond>
+        <keeWordSecond>форм</keeWordSecond>
+        <keeWordSecond>уведомлени</keeWordSecond>
+    </keeWordsSecond>
+    <styleType>error</styleType>
+    <solution>про роли пишешь, но раздела нет - как так?</solution>
+    <description>информация которая видна только в xml</description>
+  </rule>
+
+  <rule>
+    <id>9</id>
+    <before>true</before>
+    <hasFirst>false</hasFirst>
+    <keeWordsFirst>
+        <keeWordFirst>BPMN-схема</keeWordFirst>
+    </keeWordsFirst>
+    <hasSecond>true</hasSecond>
+    <keeWordsSecond>
+        <keeWordSecond>ход</keeWordSecond>
+        <keeWordSecond>процесс</keeWordSecond>
+    </keeWordsSecond>
+    <styleType>warning</styleType>
+    <solution>9 Вставить</solution>
+    <description>информация которая видна только в xml</description>
+  </rule>
+
+  <rule>
+    <id>10</id>
+    <before>true</before>
+    <hasFirst>true</hasFirst>
+    <keeWordsFirst>
+        <keeWordFirst>BPMN-схема</keeWordFirst>
+    </keeWordsFirst>
+    <hasSecond>false</hasSecond>
+    <keeWordsSecond>
+        <keeWordSecond>легенда</keeWordSecond>
+    </keeWordsSecond>
+    <styleType>warning</styleType>
+    <solution>10 Вставить</solution>
+    <description>информация которая видна только в xml</description>
+  </rule>
+
+  <rule>
+    <id>11</id>
+    <before>true</before>
+    <hasFirst>false</hasFirst>
+    <keeWordsFirst>
+        <keeWordFirst>сценарии</keeWordFirst>
+    </keeWordsFirst>
+    <hasSecond>true</hasSecond>
+    <keeWordsSecond>
+        <keeWordSecond>подписание</keeWordSecond>
+        <keeWordSecond>расчет</keeWordSecond>
+    </keeWordsSecond>
+    <styleType>warning</styleType>
+    <solution>11 Вставить</solution>
+    <description>информация которая видна только в xml</description>
+  </rule>
+
+  <rule>
+    <id>12</id>
+    <before>true</before>
+    <styleType>warning</styleType>
+    <solution>Если функционал относительно закупки, а не реестра, то прописано, какие пользователи имеют к нему доступ (не все пользователи всех заказчиков площадки, а только пользователи заказчиков данной закупки), в т.ч. переходы по прямым ссылкам</solution>
+    <description>информация которая видна только в xml</description>
+  </rule>
+
+  <rule>
+    <id>13</id>
+    <before>true</before>
+    <styleType>warning</styleType>
+    <solution>В названиях каких-либо полей не использованы сокращенные варианты, только полные</solution>
+    <description>информация которая видна только в xml</description>
+  </rule>
+
+  <rule>
+    <id>14</id>
+    <before>false</before>
+    <hasFirst>true</hasFirst>
+    <keeWordsFirst>
+        <keeWordFirst>добавить пол</keeWordFirst>
+        <keeWordFirst>новое пол</keeWordFirst>
+    </keeWordsFirst>
+    <hasSecond>false</hasSecond>
+    <keeWordsSecond>
+        <keeWordSecond>БД</keeWordSecond>
+    </keeWordsSecond>
+    <styleType>warning</styleType>
+    <solution>Указано, в какую БД/таблицу добавлять новое поле</solution>
+    <description>информация которая видна только в xml</description>
+  </rule>
+  
+  <rule>
+    <id>15</id>
+    <before>false</before>
+    <hasFirst>true</hasFirst>
+    <keeWordsFirst>
+        <keeWordFirst>добавить пол</keeWordFirst>
+        <keeWordFirst>новое пол</keeWordFirst>
+    </keeWordsFirst>
+    <hasSecond>false</hasSecond>
+    <keeWordsSecond>
+        <keeWordSecond>комментарии</keeWordSecond>
+    </keeWordsSecond>
+    <styleType>warning</styleType>
+    <solution>Указан комментарий к добавляемому полю </solution>
+    <description>информация которая видна только в xml</description>
+  </rule>
+  
+  <rule>
+    <id>16</id>
+    <before>false</before>
+    <hasFirst>true</hasFirst>
+    <keeWordsFirst>
+        <keeWordFirst>добавить пол</keeWordFirst>
+        <keeWordFirst>новое пол</keeWordFirst>
+    </keeWordsFirst>
+    <hasSecond>false</hasSecond>
+    <keeWordsSecond>
+        <keeWordSecond>формат</keeWordSecond>
+    </keeWordsSecond>
+    <styleType>warning</styleType>
+    <solution>Указан формат нового поля в БД и на форме</solution>
+    <description>информация которая видна только в xml</description>
+  </rule>
+
+  <rule>
+    <id>17</id>
+    <before>false</before>
+    <hasFirst>true</hasFirst>
+    <keeWordsFirst>
+        <keeWordFirst>добавить редактируемое пол</keeWordFirst>
+        <keeWordFirst>новое редактируемое пол</keeWordFirst>
+    </keeWordsFirst>
+    <hasSecond>false</hasSecond>
+    <keeWordsSecond>
+        <keeWordSecond>подсказк</keeWordSecond>
+    </keeWordsSecond>
+    <styleType>warning</styleType>
+    <solution>Нужна ли для поля подсказка? Если да, прописан текст подсказки</solution>
+    <description>информация которая видна только в xml</description>
+  </rule>
+  
+  <rule>
+    <id>18</id>
+    <before>false</before>
+    <hasFirst>true</hasFirst>
+    <keeWordsFirst>
+        <keeWordFirst>добавить редактируемое пол</keeWordFirst>
+        <keeWordFirst>новое редактируемое пол</keeWordFirst>
+    </keeWordsFirst>
+    <hasSecond>false</hasSecond>
+    <keeWordsSecond>
+        <keeWordSecond>по-умолчанию</keeWordSecond>
+        <keeWordSecond>умолчанию</keeWordSecond>
+    </keeWordsSecond>
+    <styleType>warning</styleType>
+    <solution>Указано, чем предзаполнять поле по умолчанию (в т.ч. поле-источник в БД или уже реализованная форма, на которой данная информация есть)</solution>
+    <description>информация которая видна только в xml</description>
+  </rule>
+  
+  <rule>
+    <id>19</id>
+    <before>false</before>
+    <hasFirst>true</hasFirst>
+    <keeWordsFirst>
+        <keeWordFirst>добавить редактируемое пол</keeWordFirst>
+        <keeWordFirst>новое редактируемое пол</keeWordFirst>
+    </keeWordsFirst>
+    <hasSecond>false</hasSecond>
+    <keeWordsSecond>
+        <keeWordSecond>обязательно</keeWordSecond>
+        <keeWordSecond>не обязательно</keeWordSecond>
+        <keeWordSecond>необязательно</keeWordSecond>
+    </keeWordsSecond>
+    <styleType>warning</styleType>
+    <solution>Указана обязательность заполнения поля</solution>
+    <description>информация которая видна только в xml</description>
+  </rule>
+
+  <rule>
+    <id>20</id>
+    <before>false</before>
+    <hasFirst>true</hasFirst>
+    <keeWordsFirst>
+        <keeWordFirst>добавить пол</keeWordFirst>
+        <keeWordFirst>новое пол</keeWordFirst>
+    </keeWordsFirst>
+    <hasSecond>false</hasSecond>
+    <keeWordsSecond>
+        <keeWordSecond>печат</keeWordSecond>
+        <keeWordSecond>архив</keeWordSecond>
+    </keeWordsSecond>
+    <styleType>warning</styleType>
+    <solution>Указаны доработки для форм предпросмотра, версии для печати, выгружаемой в архив</solution>
+    <description>информация которая видна только в xml</description>
+  </rule>
+
+  <rule>
+    <id>21</id>
+    <before>false</before>
+    <hasFirst>true</hasFirst>
+    <keeWordsFirst>
+        <keeWordFirst>пакет ЕИС</keeWordFirst>
+        <keeWordFirst>пакет из ЕИС</keeWordFirst>
+        <keeWordFirst>пакет в ЕИС</keeWordFirst>
+    </keeWordsFirst>
+    <hasSecond>false</hasSecond>
+    <keeWordsSecond>
+        <keeWordSecond>поле в БД</keeWordSecond>
+    </keeWordsSecond>
+    <styleType>warning</styleType>
+    <solution>В описании пакета присутствует столбец "Поле в БД", в нем описано:</solution>
+    <description>информация которая видна только в xml</description>
+  </rule>
+  
+  <rule>
+    <id>22</id>
+    <before>false</before>
+    <hasFirst>true</hasFirst>
+    <keeWordsFirst>
+        <keeWordFirst>пакет ЕИС</keeWordFirst>
+        <keeWordFirst>пакет из ЕИС</keeWordFirst>
+        <keeWordFirst>пакет в ЕИС</keeWordFirst>
+    </keeWordsFirst>
+    <hasSecond>false</hasSecond>
+    <keeWordsSecond>
+        <keeWordSecond>событи</keeWordSecond>
+    </keeWordsSecond>
+    <styleType>warning</styleType>
+    <solution>Описана потребность опубликовать событие, а также состав формы события</solution>
+    <description>информация которая видна только в xml</description>
+  </rule>
+  
+  <rule>
+    <id>23</id>
+    <before>false</before>
+    <hasFirst>true</hasFirst>
+    <keeWordsFirst>
+        <keeWordFirst>пакет ЕИС</keeWordFirst>
+        <keeWordFirst>пакет из ЕИС</keeWordFirst>
+        <keeWordFirst>пакет в ЕИС</keeWordFirst>
+    </keeWordsFirst>
+    <hasSecond>false</hasSecond>
+    <keeWordsSecond>
+        <keeWordSecond>уведомлени</keeWordSecond>
+    </keeWordsSecond>
+    <styleType>warning</styleType>
+    <solution>Описана потребность отправлять уведомления:</solution>
+    <description>информация которая видна только в xml</description>
+  </rule>
+  
+  <rule>
+    <id>24</id>
+    <before>false</before>
+    <hasFirst>true</hasFirst>
+    <keeWordsFirst>
+        <keeWordFirst>пакет ЕИС</keeWordFirst>
+        <keeWordFirst>пакет из ЕИС</keeWordFirst>
+        <keeWordFirst>пакет в ЕИС</keeWordFirst>
+    </keeWordsFirst>
+    <hasSecond>false</hasSecond>
+    <keeWordsSecond>
+        <keeWordSecond>НР</keeWordSecond>
+    </keeWordsSecond>
+    <styleType>warning</styleType>
+    <solution>Описаны пакеты в НР, если они отправляются</solution>
+    <description>информация которая видна только в xml</description>
+  </rule>
+
+  <rule>
+    <id>25</id>
+    <before>false</before>
+    <hasFirst>true</hasFirst>
+    <keeWordsFirst>
+        <keeWordFirst>пакет НР</keeWordFirst>
+        <keeWordFirst>пакет из НР</keeWordFirst>
+        <keeWordFirst>пакет в НР</keeWordFirst>
+    </keeWordsFirst>
+    <hasSecond>false</hasSecond>
+    <keeWordsSecond>
+        <keeWordSecond>поле в БД</keeWordSecond>
+    </keeWordsSecond>
+    <styleType>warning</styleType>
+    <solution>В описании пакета присутствует столбец "Поле в БД", в нем описано:</solution>
+    <description>информация которая видна только в xml</description>
+  </rule>
+
+  <rule>
+    <id>23</id>
+    <before>false</before>
+    <hasFirst>true</hasFirst>
+    <keeWordsFirst>
+        <keeWordFirst>добавить справочник</keeWordFirst>
+        <keeWordFirst>новый справочник</keeWordFirst>
+    </keeWordsFirst>
+    <hasSecond>false</hasSecond>
+    <keeWordsSecond>
+        <keeWordSecond>выгрузка</keeWordSecond>
+        <keeWordSecond>выгружать</keeWordSecond>
+    </keeWordsSecond>
+    <styleType>warning</styleType>
+    <solution>Описано откуда брать справочник</solution>
+    <description>информация которая видна только в xml</description>
+  </rule>
+  
+  <rule>
+    <id>27</id>
+    <before>false</before>
+    <hasFirst>true</hasFirst>
+    <keeWordsFirst>
+        <keeWordFirst>добавить справочник</keeWordFirst>
+        <keeWordFirst>новый справочник</keeWordFirst>
+    </keeWordsFirst>
+    <hasSecond>false</hasSecond>
+    <keeWordsSecond>
+        <keeWordSecond>хранить</keeWordSecond>
+    </keeWordsSecond>
+    <styleType>warning</styleType>
+    <solution>Описано куда записывать информацию:БД classifier?Какие добавить поля?Какие комментарии добавить к полям?</solution>
+    <description>информация которая видна только в xml</description>
+  </rule>
+  
+  <rule>
+    <id>28</id>
+    <before>false</before>
+    <hasFirst>true</hasFirst>
+    <keeWordsFirst>
+        <keeWordFirst>добавить справочник</keeWordFirst>
+        <keeWordFirst>новый справочник</keeWordFirst>
+    </keeWordsFirst>
+    <hasSecond>false</hasSecond>
+    <keeWordsSecond>
+        <keeWordSecond>обновлять</keeWordSecond>
+        <keeWordSecond>обновление</keeWordSecond>
+    </keeWordsSecond>
+    <styleType>warning</styleType>
+    <solution>Описано как часто обновлять информацию из справочника</solution>
+    <description>информация которая видна только в xml</description>
+  </rule>
+
+  <rule>
+    <id>29</id>
+    <before>false</before>
+    <hasFirst>true</hasFirst>
+    <keeWordsFirst>
+        <keeWordFirst>добавить таблиц</keeWordFirst>
+        <keeWordFirst>изменить таблиц</keeWordFirst>
+        <keeWordFirst>доработать таблиц</keeWordFirst>
+    </keeWordsFirst>
+    <hasSecond>false</hasSecond>
+    <keeWordsSecond>
+        <keeWordSecond>сортиров</keeWordSecond>
+    </keeWordsSecond>
+    <styleType>warning</styleType>
+    <solution>Прописана сортировка по умолчанию, указаны столбцы по которым возможна сортировка</solution>
+    <description>информация которая видна только в xml</description>
+  </rule>
+
+  <rule>
+    <id>30</id>
+    <before>false</before>
+    <hasFirst>true</hasFirst>
+    <keeWordsFirst>
+        <keeWordFirst>добавить таблиц</keeWordFirst>
+        <keeWordFirst>изменить таблиц</keeWordFirst>
+        <keeWordFirst>доработать таблиц</keeWordFirst>
+    </keeWordsFirst>
+    <hasSecond>false</hasSecond>
+    <keeWordsSecond>
+        <keeWordSecond>пагинаци</keeWordSecond>
+    </keeWordsSecond>
+    <styleType>warning</styleType>
+    <solution>Прописана пагинация, а также сколько отображать на странице записей и варианты этих количеств</solution>
+    <description>информация которая видна только в xml</description>
+  </rule>
+
+  <rule>
+    <id>31</id>
+    <before>false</before>
+    <hasFirst>true</hasFirst>
+    <keeWordsFirst>
+        <keeWordFirst>добавить таблиц</keeWordFirst>
+        <keeWordFirst>изменить таблиц</keeWordFirst>
+        <keeWordFirst>доработать таблиц</keeWordFirst>
+    </keeWordsFirst>
+    <hasSecond>false</hasSecond>
+    <keeWordsSecond>
+        <keeWordSecond>поиск</keeWordSecond>
+    </keeWordsSecond>
+    <styleType>warning</styleType>
+    <solution>Описан поиск по таблице, если он требуется</solution>
+    <description>информация которая видна только в xml</description>
+  </rule>
+
+  <rule>
+    <id>2</id>
+    <before>false</before>
+    <hasFirst>true</hasFirst>
+    <keeWordsFirst>
+        <keeWordFirst>добавить фильтр</keeWordFirst>
+        <keeWordFirst>изменить фильтр</keeWordFirst>
+        <keeWordFirst>доработать фильтр</keeWordFirst>
+    </keeWordsFirst>
+    <hasSecond>false</hasSecond>
+    <keeWordsSecond>
+        <keeWordSecond>сохранять</keeWordSecond>
+        <keeWordSecond>сохранение</keeWordSecond>
+    </keeWordsSecond>
+    <styleType>warning</styleType>
+    <solution>Указать сохранять ли значение фильтра (при возврате на страницу, при перелогине и т.п.)</solution>
+    <description>информация которая видна только в xml</description>
   </rule>
 
 </rules>

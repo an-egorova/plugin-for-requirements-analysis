@@ -3,35 +3,57 @@ let requrimentText="";
 let wordKeys = [];
 let problem = [];
 let solution = [];
+let styleType = [];
 let type = [];
+let id = [];
+let targetHeader = [];
 let recommend = new Array();
+let paragraphs=[];
+let headerToParagraph=[];
+let header=[];
+let rules = [];
+
 
 function fileRead() {
-  return new Promise((resolve, reject) => {
-    let xhr = new XMLHttpRequest();
-    xhr.open("GET", "knowledgeBase.xml");
-    xhr.onreadystatechange = function() {
-      if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
-        let xmlDoc = xhr.responseXML;
-        let rules = xmlDoc.getElementsByTagName("rule");
-        for (let i = 0; i < rules.length; i++) {
-          let wordKeysElem = rules[i].getElementsByTagName("wordKey");
-          let keys = [];
-          for (let j = 0; j < wordKeysElem.length; j++) {
-            keys.push(wordKeysElem[j].textContent);
-          }
-          wordKeys.push(keys);
-          problem.push(rules[i].getElementsByTagName("problem")[0].textContent);
-          solution.push(rules[i].getElementsByTagName("solution")[0].textContent);
-          type.push(rules[i].getElementsByTagName("type")[0].textContent);
-        }
-        resolve();
-      } else if (xhr.readyState === XMLHttpRequest.DONE && xhr.status !== 200) {
-        reject("Error loading file");
+  const xhr = new XMLHttpRequest();
+  xhr.onreadystatechange = function() {
+    if (this.readyState == 4 && this.status == 200) {
+      const xmlDoc = this.responseXML;
+      const rulesArr = xmlDoc.getElementsByTagName("rule");
+
+      for (let i = 0; i < rulesArr.length; i++) {
+        const rule = rulesArr[i];
+        const id = parseInt(rule.getElementsByTagName("id")[0]?.childNodes[0]?.nodeValue);
+        const before = rule.getElementsByTagName("before")[0]?.childNodes[0]?.nodeValue === 'true';
+        const hasFirst = rule.getElementsByTagName("hasFirst")[0]?.childNodes[0]?.nodeValue === 'true';
+        const keeWordsFirstElems = rule.getElementsByTagName("keeWordFirst");
+        const keeWordsFirst = keeWordsFirstElems.length > 0 ? Array.from(keeWordsFirstElems).map((el) => el.childNodes[0]?.nodeValue) : [];
+        const hasSecond = rule.getElementsByTagName("hasSecond")[0]?.childNodes[0]?.nodeValue === 'true';
+        const keeWordsSecondElems = rule.getElementsByTagName("keeWordSecond");
+        const keeWordsSecond = keeWordsSecondElems.length > 0 ? Array.from(keeWordsSecondElems).map((el) => el.childNodes[0]?.nodeValue) : [];
+        const styleType = rule.getElementsByTagName("styleType")[0]?.childNodes[0]?.nodeValue;
+        const solution = rule.getElementsByTagName("solution")[0]?.childNodes[0]?.nodeValue;
+        const description = rule.getElementsByTagName("description")[0]?.childNodes[0]?.nodeValue;
+        
+        const ruleObj = {
+          id: id,
+          before: before,
+          hasFirst: hasFirst,
+          keeWordsFirst: keeWordsFirst,
+          hasSecond: hasSecond,
+          keeWordsSecond: keeWordsSecond,
+          styleType: styleType,
+          solution: solution,
+          description: description
+        };
+
+        rules.push(ruleObj);
       }
-    };
-    xhr.send();
-  });
+
+    }
+  };
+  xhr.open("GET", "knowledgeBase.xml");
+  xhr.send();
 }
 
 //сохранили информацию из базы знаний
@@ -45,10 +67,12 @@ const closeCurrentPage = () => {
 // Функция для выполнения асинхронного запроса к активному табу
 const saveInfoInActiveTabs = (tabs) => {
   return new Promise(async (resolve, reject) => {
-    const currentUrl=tabs[0].url;
+    const currentUrl = tabs[0].url;
     let response = await fetch(currentUrl);
     responseText = await response.text();
-    resolve();
+    const paragraphRegex = /<p>(.*?)<\/p>/g; // Регулярное выражение для поиска элементов <p></p>
+    paragraphs = responseText.match(paragraphRegex); // Находим все элементы <p></p> в ответе и записываем их в массив
+    resolve(paragraphs);
   });
 }
 
@@ -56,46 +80,109 @@ const saveInfoInActiveTabs = (tabs) => {
 const chromeTabsError = (error) => {
   console.error(`Error: ${error}`);
 }
+// Функция для обновления содержимого попапа
+function updatePopup(i, rule, buttonInput) {
+  const form = document.querySelector('body');
+  // Очищаем содержимое формы
+  form.innerHTML = '';
+  
+  const h2Input = document.createElement("h2");
+  const pInput = document.createElement("p");
+  if (rule.styleType == "error"){
+    h2Input.className = "error";
+    buttonInput.className = "error";
+  } else if (rule.styleType == "warning"){
+    h2Input.className = "warning";
+    buttonInput.className = "warning";
+  }
+  h2Input.innerHTML = rule.styleType === 'error' ? 'Ошибка' : 'Рекомендация';
+  pInput.innerHTML = rule.solution;
+  buttonInput.id = `okButton${i}`;
+  buttonInput.style = "float:right; width:125px;"
+  
+  form.appendChild(h2Input);
+  form.appendChild(pInput);
+  form.appendChild(buttonInput);
+  buttonInput.textContent = "Исправлю";
+}
 
 // Функция для анализа текста требований
-const analizeRequrimentText = async () => {
-  //делаем текст читаемым
-  requrimentText = responseText.toLowerCase();
+async function analizeRequrimentText() {
+  let requrimentText = "";
+  
+  // Делаем текст читаемым
+  for (let i = 0; i < paragraphs.length; i++) {
+    paragraphs[i] = paragraphs[i].toLowerCase();
+    requrimentText += paragraphs[i];
+  }
 
-  //проверяем текст страницы, чтобы вернуть рекомендации
-  for (let i=0; i<wordKeys.length; i++){
-    if (!requrimentText.includes(wordKeys[i])) {
-      //recommend.push(solution[i]);
-      const form = document.querySelector('body');
-      // Меняем содержимое новым HTML
-      form.innerHTML = '';
-      const h2Input = document.createElement("h2");
-      if (type[i]=="error"){
-        h2Input.className="error";
-        h2Input.innerHTML = "Ошибка";
+  for (let i = 0; i < rules.length; i++) {
+    const rule = rules[i];
+
+    // Проверяем условие before == true
+    if (rule.before) {
+      // Проверяем условие hasSecond != null
+      if (rule.hasSecond !== null) {
+        // Проверяем условие hasFirst == true
+        if (rule.hasFirst) {
+          // Проверяем условие hasSecond == true
+          if (rule.hasSecond) {
+            // Проверяем наличие keeWordFirst в заголовках и keeWordSecond в тексте
+            if (
+              rule.keeWordsFirst.includes(header[i]) &&
+              requrimentText.includes(rule.keeWordsSecond[i])
+            ) {
+              const buttonInput = document.createElement("button");
+              updatePopup(i, rule, buttonInput);
+              const result = await clickOnButton(buttonInput);
+            }
+          } else {
+            // Проверяем наличие keeWordFirst в заголовках и отсутствие keeWordSecond в тексте
+            if (
+              rule.keeWordsFirst.includes(header[i]) &&
+              !requrimentText.includes(rule.keeWordsSecond[i])
+            ) {
+              const buttonInput = document.createElement("button");
+              updatePopup(i, rule, buttonInput);
+              const result = await clickOnButton(buttonInput);
+            }
+          }
+        } else {
+          // Проверяем условие hasSecond == true
+          if (rule.hasSecond) {
+            // Проверяем отсутствие keeWordFirst в заголовках и наличие keeWordSecond в тексте
+            if (
+              !rule.keeWordsFirst.includes(header[i]) &&
+              requrimentText.includes(rule.keeWordsSecond[i])
+            ) {
+              const buttonInput = document.createElement("button");
+              updatePopup(i, rule, buttonInput);
+              const result = await clickOnButton(buttonInput);
+            }
+          }
+        }
+      } else {
+        // Проверяем отсутствие hasSecond
+        if (!rule.keeWordsFirst.includes(header[i])) {
+          const buttonInput = document.createElement("button");
+          updatePopup(i, rule, buttonInput);
+          const result = await clickOnButton(buttonInput);
+        }
       }
-      else{
-        h2Input.className="warning";
-        h2Input.innerHTML = "Рекомендация";
+    } else {
+      // Проверяем условие before == false
+      if (
+        requrimentText.includes(rule.keeWordsFirst) &&
+        !requrimentText.includes(rule.keeWordsSecond)
+      ) {
+        const buttonInput = document.createElement("button");
+        updatePopup(i, rule, buttonInput);
+        const result = await clickOnButton(buttonInput);
       }
-      document.body.append(h2Input);
-      const pInput = document.createElement("p");
-      document.body.append(pInput);
-      pInput.innerHTML = solution[i];
-      const buttonInput = document.createElement("button");
-      buttonInput.id=`okButton${i}`;
-      if (type[i]=="error"){
-        buttonInput.className="error";
-      }
-      else{
-        buttonInput.className="warning";
-      }
-      buttonInput.style="float:right; width:125px;"
-      document.body.append(buttonInput);
-      buttonInput.innerHTML = "Исправлю";
-      const result = await clickOnButton(buttonInput);
     }
   }
+  
+  // Добавляем сообщение о завершении проверки
   createEndPopup();
 }
 
