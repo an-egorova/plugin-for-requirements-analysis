@@ -1,15 +1,7 @@
 let responseText = "";
 let requrimentText="";
-let wordKeys = [];
-let problem = [];
-let solution = [];
-let styleType = [];
-let type = [];
-let id = [];
-let targetHeader = [];
-let recommend = new Array();
+let headerText = "";
 let paragraphs=[];
-let headerToParagraph=[];
 let header=[];
 let rules = [];
 
@@ -25,6 +17,7 @@ function fileRead() {
         const rule = rulesArr[i];
         const id = parseInt(rule.getElementsByTagName("id")[0]?.childNodes[0]?.nodeValue);
         const before = rule.getElementsByTagName("before")[0]?.childNodes[0]?.nodeValue === 'true';
+        const countWarriable = parseInt(rule.getElementsByTagName("countWarriable")[0]?.childNodes[0]?.nodeValue);
         const hasFirst = rule.getElementsByTagName("hasFirst")[0]?.childNodes[0]?.nodeValue === 'true';
         const keeWordsFirstElems = rule.getElementsByTagName("keeWordFirst");
         const keeWordsFirst = keeWordsFirstElems.length > 0 ? Array.from(keeWordsFirstElems).map((el) => el.childNodes[0]?.nodeValue) : [];
@@ -38,6 +31,7 @@ function fileRead() {
         const ruleObj = {
           id: id,
           before: before,
+          countWarriable: countWarriable,
           hasFirst: hasFirst,
           keeWordsFirst: keeWordsFirst,
           hasSecond: hasSecond,
@@ -64,15 +58,17 @@ const closeCurrentPage = () => {
   window.close();
 }
 
-// Функция для выполнения асинхронного запроса к активному табу
+// Измененная функция для выполнения асинхронного запроса к активному табу
 const saveInfoInActiveTabs = (tabs) => {
   return new Promise(async (resolve, reject) => {
     const currentUrl = tabs[0].url;
     let response = await fetch(currentUrl);
     responseText = await response.text();
     const paragraphRegex = /<p>(.*?)<\/p>/g; // Регулярное выражение для поиска элементов <p></p>
+    const headerRegex = /<(h1|h2|h3|h4|h5)>(.*?)<\/(h1|h2|h3|h4|h5)>/g; // Регулярное выражение для поиска элементов <h1></h1>, <h2></h2>, <h3></h3>
     paragraphs = responseText.match(paragraphRegex); // Находим все элементы <p></p> в ответе и записываем их в массив
-    resolve(paragraphs);
+    header = responseText.match(headerRegex); // Находим все элементы <h1></h1>, <h2></h2>, <h3></h3> в ответе и записываем их в массив
+    resolve({ paragraphs, header });
   });
 }
 
@@ -116,30 +112,51 @@ async function analizeRequrimentText() {
     requrimentText += paragraphs[i];
   }
 
+  // Делаем текст читаемым
+  for (let i = 0; i < header.length; i++) {
+    header[i] = header[i].toLowerCase();
+    headerText += header[i];
+  }
+
   for (let i = 0; i < rules.length; i++) {
     const rule = rules[i];
-
     // Проверяем условие before == true
     if (rule.before) {
-      // Проверяем условие hasSecond != null
-      if (rule.hasSecond !== null) {
-        // Проверяем условие hasFirst == true
-        if (rule.hasFirst) {
-          // Проверяем условие hasSecond == true
-          if (rule.hasSecond) {
-            // Проверяем наличие keeWordFirst в заголовках и keeWordSecond в тексте
+      if (rule.countWarriable==0){
+        const buttonInput = document.createElement("button");
+        updatePopup(i, rule, buttonInput);
+        const result = await clickOnButton(buttonInput);
+      }
+      else if (rule.countWarriable==1){
+        if (rule.hasFirst){
+          if (headerText.includes(rule.keeWordsFirst[i])){
+            const buttonInput = document.createElement("button");
+            updatePopup(i, rule, buttonInput);
+            const result = await clickOnButton(buttonInput);
+          }
+        } else {
+          if (!headerText.includes(rule.keeWordsFirst[i])){
+            const buttonInput = document.createElement("button");
+            updatePopup(i, rule, buttonInput);
+            const result = await clickOnButton(buttonInput);
+          }
+        }
+      }
+      else if (rule.countWarriable==2){
+        if (rule.hasFirst){
+          if (rule.hasSecond){
             if (
-              rule.keeWordsFirst.includes(header[i]) &&
+              headerText.includes(rule.keeWordsFirst[i]) &&
               requrimentText.includes(rule.keeWordsSecond[i])
             ) {
               const buttonInput = document.createElement("button");
               updatePopup(i, rule, buttonInput);
               const result = await clickOnButton(buttonInput);
             }
-          } else {
-            // Проверяем наличие keeWordFirst в заголовках и отсутствие keeWordSecond в тексте
+          }
+          else{
             if (
-              rule.keeWordsFirst.includes(header[i]) &&
+              headerText.includes(rule.keeWordsFirst[i]) &&
               !requrimentText.includes(rule.keeWordsSecond[i])
             ) {
               const buttonInput = document.createElement("button");
@@ -147,12 +164,11 @@ async function analizeRequrimentText() {
               const result = await clickOnButton(buttonInput);
             }
           }
-        } else {
-          // Проверяем условие hasSecond == true
-          if (rule.hasSecond) {
-            // Проверяем отсутствие keeWordFirst в заголовках и наличие keeWordSecond в тексте
+        }
+        else {                 
+          if (rule.hasSecond){
             if (
-              !rule.keeWordsFirst.includes(header[i]) &&
+              !headerText.includes(rule.keeWordsFirst[i]) &&
               requrimentText.includes(rule.keeWordsSecond[i])
             ) {
               const buttonInput = document.createElement("button");
@@ -160,13 +176,16 @@ async function analizeRequrimentText() {
               const result = await clickOnButton(buttonInput);
             }
           }
-        }
-      } else {
-        // Проверяем отсутствие hasSecond
-        if (!rule.keeWordsFirst.includes(header[i])) {
-          const buttonInput = document.createElement("button");
-          updatePopup(i, rule, buttonInput);
-          const result = await clickOnButton(buttonInput);
+          else {
+            if (
+              !headerText.includes(rule.keeWordsFirst[i]) &&
+              !requrimentText.includes(rule.keeWordsSecond[i])
+            ) {
+              const buttonInput = document.createElement("button");
+              updatePopup(i, rule, buttonInput);
+              const result = await clickOnButton(buttonInput);
+            }
+          }
         }
       }
     } else {
@@ -181,7 +200,6 @@ async function analizeRequrimentText() {
       }
     }
   }
-  
   // Добавляем сообщение о завершении проверки
   createEndPopup();
 }
@@ -222,4 +240,14 @@ start.addEventListener('click', () => {
     // Здесь можно продолжить выполнение кода, который зависит от выполнения saveInfoInActiveTabs()
     analizeRequrimentText(); // Функция для анализа текста требований
   }, chromeTabsError);
+});
+
+// Создаем слушателя click на окне popup
+window.addEventListener("click", function(event) {
+  const isInsidePopup = event.composedPath().some(function(node) {
+    return node.id == "popup";
+  });
+  if (!isInsidePopup) {
+    event.preventDefault();
+  }
 });
