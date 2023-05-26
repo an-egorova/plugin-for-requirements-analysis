@@ -65,12 +65,16 @@ const saveInfoInActiveTabs = (tabs) => {
     let response = await fetch(currentUrl);
     responseText = await response.text();
     const paragraphRegex = /<p>(.*?)<\/p>/g; // Регулярное выражение для поиска элементов <p></p>
-    const headerRegex = /<(h1|h2|h3|h4|h5)>(.*?)<\/(h1|h2|h3|h4|h5)>/g; // Регулярное выражение для поиска элементов <h1></h1>, <h2></h2>, <h3></h3>
+    const headerRegex = /<(h[1-6])(.*?)>(.*?)<\/(h[1-6])>/g; // Регулярное выражение для поиска элементов <h1> - <h6>, игнорирующее id и class
+    //const headerRegex = /<(h[1-6])(?!.*class)(?!.*id).*?>(.*?)<\/(h[1-6])>/g; // Регулярное выражение для поиска элементов <h1> - <h6>, игнорирующее классы и id
+    //const headerRegex = /<(h1|h2|h3|h4|h5)>(.*?)<\/(h1|h2|h3|h4|h5)>/g; // Регулярное выражение для поиска элементов <h1></h1>, <h2></h2>, <h3></h3>
     paragraphs = responseText.match(paragraphRegex); // Находим все элементы <p></p> в ответе и записываем их в массив
     header = responseText.match(headerRegex); // Находим все элементы <h1></h1>, <h2></h2>, <h3></h3> в ответе и записываем их в массив
     resolve({ paragraphs, header });
   });
 }
+
+    
 
 // Функция для обработки ошибки получения URL активного таба
 const chromeTabsError = (error) => {
@@ -104,6 +108,7 @@ function updatePopup(i, rule, buttonInput) {
 
 // Функция для анализа текста требований
 async function analizeRequrimentText() {
+
   let requrimentText = "";
   
   // Делаем текст читаемым
@@ -129,13 +134,13 @@ async function analizeRequrimentText() {
       }
       else if (rule.countWarriable==1){
         if (rule.hasFirst){
-          if (headerText.includes(rule.keeWordsFirst[i])){
+          if (headerText.includes(rule.keeWordsFirst)){
             const buttonInput = document.createElement("button");
             updatePopup(i, rule, buttonInput);
             const result = await clickOnButton(buttonInput);
           }
         } else {
-          if (!headerText.includes(rule.keeWordsFirst[i])){
+          if (!headerText.includes(rule.keeWordsFirst)){
             const buttonInput = document.createElement("button");
             updatePopup(i, rule, buttonInput);
             const result = await clickOnButton(buttonInput);
@@ -145,20 +150,18 @@ async function analizeRequrimentText() {
       else if (rule.countWarriable==2){
         if (rule.hasFirst){
           if (rule.hasSecond){
-            if (
-              headerText.includes(rule.keeWordsFirst[i]) &&
-              requrimentText.includes(rule.keeWordsSecond[i])
-            ) {
+            const isFirstMatch = rule.keeWordsFirst.some((kw) => headerText.includes(kw));
+            const isSecondMatch = rule.keeWordsSecond.some((kw) => requrimentText.includes(kw));
+            if (isFirstMatch && isSecondMatch) {
               const buttonInput = document.createElement("button");
               updatePopup(i, rule, buttonInput);
               const result = await clickOnButton(buttonInput);
             }
           }
           else{
-            if (
-              headerText.includes(rule.keeWordsFirst[i]) &&
-              !requrimentText.includes(rule.keeWordsSecond[i])
-            ) {
+            const isFirstMatch = rule.keeWordsFirst.some((kw) => headerText.includes(kw));
+            const isSecondNotMatch = rule.keeWordsSecond.every((kw) => !requrimentText.includes(kw));
+            if (isFirstMatch && isSecondNotMatch) {
               const buttonInput = document.createElement("button");
               updatePopup(i, rule, buttonInput);
               const result = await clickOnButton(buttonInput);
@@ -167,20 +170,18 @@ async function analizeRequrimentText() {
         }
         else {                 
           if (rule.hasSecond){
-            if (
-              !headerText.includes(rule.keeWordsFirst[i]) &&
-              requrimentText.includes(rule.keeWordsSecond[i])
-            ) {
+            const isFirstNotMatch = rule.keeWordsFirst.every((kw) => !headerText.includes(kw));
+            const isSecondMatch = rule.keeWordsSecond.some((kw) => requrimentText.includes(kw));
+            if (isFirstNotMatch && isSecondMatch) {
               const buttonInput = document.createElement("button");
               updatePopup(i, rule, buttonInput);
               const result = await clickOnButton(buttonInput);
             }
           }
           else {
-            if (
-              !headerText.includes(rule.keeWordsFirst[i]) &&
-              !requrimentText.includes(rule.keeWordsSecond[i])
-            ) {
+            const isFirstNotMatch = rule.keeWordsFirst.every((kw) => !headerText.includes(kw));
+            const isSecondNotMatch = rule.keeWordsSecond.every((kw) => !requrimentText.includes(kw));
+            if (isFirstNotMatch && isSecondNotMatch) {
               const buttonInput = document.createElement("button");
               updatePopup(i, rule, buttonInput);
               const result = await clickOnButton(buttonInput);
@@ -189,11 +190,9 @@ async function analizeRequrimentText() {
         }
       }
     } else {
-      // Проверяем условие before == false
-      if (
-        requrimentText.includes(rule.keeWordsFirst) &&
-        !requrimentText.includes(rule.keeWordsSecond)
-      ) {
+      const isFirstMatch = rule.keeWordsFirst.some((kw) => requrimentText.includes(kw));
+      const isSecondNotMatch = rule.keeWordsSecond.every((kw) => !requrimentText.includes(kw));
+      if (isFirstMatch && isSecondNotMatch) {
         const buttonInput = document.createElement("button");
         updatePopup(i, rule, buttonInput);
         const result = await clickOnButton(buttonInput);
@@ -220,7 +219,7 @@ const createEndPopup = () => {
   h2InputEnd.innerHTML = "Готово";
   const pInputEnd = document.createElement("p");
   document.body.append(pInputEnd);
-  pInputEnd.innerHTML = "Ошибок и рекомендаций по улучшению больше нет";
+  pInputEnd.innerHTML = "Ошибок и рекомендаций по улучшению нет";
   const buttonInputEnd = document.createElement("button");
   document.body.append(buttonInputEnd);
   buttonInputEnd.className="primary";
@@ -236,18 +235,11 @@ start.addEventListener('click', () => {
   var currentUrl = "";
   var chromeTabsError = "";
   chrome.tabs.query({ currentWindow: true, active: true }).then(async tabs => {
+    const pInputEnd = document.createElement("p");
+    document.body.append(pInputEnd);
+    pInputEnd.innerHTML = "(вместо колесика с ожиданием текст что скоро все появится, надо подождать)";
     await saveInfoInActiveTabs(tabs);
     // Здесь можно продолжить выполнение кода, который зависит от выполнения saveInfoInActiveTabs()
     analizeRequrimentText(); // Функция для анализа текста требований
   }, chromeTabsError);
-});
-
-// Создаем слушателя click на окне popup
-window.addEventListener("click", function(event) {
-  const isInsidePopup = event.composedPath().some(function(node) {
-    return node.id == "popup";
-  });
-  if (!isInsidePopup) {
-    event.preventDefault();
-  }
 });

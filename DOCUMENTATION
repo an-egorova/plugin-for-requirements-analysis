@@ -232,3 +232,33 @@ deactivate Веб-страница
 Браузерное расширение->Браузерное расширение: Проанализировать содержимое\nвеб-страницы, используя данные\nиз базы знаний
 Браузерное расширение-->Пользователь:Отобразить рекомендации \nэкспертной системы
 deactivate Браузерное расширение 
+
+
+
+
+
+  <rule>
+    <id>1</id>
+    <before>true</before>
+    <countWarriable>1</countWarriable>
+    <hasFirst>false</hasFirst>
+    <keeWordsFirst>
+        <keeWordFirst>содержание</keeWordFirst>
+    </keeWordsFirst>
+    <styleType>error</styleType>
+    <solution>Основные разделы CRQ должны быть представлены подпунктами данной страницы. Обычно содержание располагают после раздела "Версии документа". Содержание добавляется на страницу при помощи макроса "Оглавление".</solution>
+    <description>информация которая видна только в xml</description>
+  </rule>
+
+  <rule>
+    <id>2</id>
+    <before>true</before>
+    <countWarriable>1</countWarriable>
+    <hasFirst>false</hasFirst>
+    <keeWordsFirst>
+        <keeWordFirst>версии документа</keeWordFirst>
+    </keeWordsFirst>
+    <styleType>error</styleType>
+    <solution>Добавить раздел с информацией о версиях документа. В разделе должна содержаться таблица с информацией о версионности документа. Таблица должна содержать столбцы: “Версия”, “Дата”, “Задача”, “Кто внес изменения”, “Раздел документа”, “Изменения”.</solution>
+    <description>информация которая видна только в xml</description>
+  </rule>
